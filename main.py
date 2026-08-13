@@ -1,24 +1,30 @@
-from telethon import TelegramClient, events
+from telegram import Update
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 
-# ១. ជំនួស API ID និង API Hash ដែលទទួលបានពី my.telegram.org
-API_ID = 1234567  # ដាក់លេខ API ID របស់អ្នកនៅទីនេះ (គ្មាន ' ')
-API_HASH = 'your_api_hash_here'  # ដាក់ API Hash របស់អ្នកនៅទីនេះ
+# ជំនួស Bot Token ដែលបានមកពី BotFather នៅទីនេះ
+BOT_TOKEN = "8047614722:AAHaV8uANS1U0QDRH0MWZmLTcQX327BZlEo"
 
-# ២. ដាក់ Username ឬ User ID របស់មនុស្សដែលផ្ញើសារមករំខានអ្នកនោះ
-# ឧទាហរណ៍៖ 'username_person' (កុំដាក់សញ្ញា @)
-TARGET_USER = 'target_username'
+# ដាក់ Telegram Username របស់មនុស្សដែលអ្នកចង់ reply (ឧទាហរណ៍: "john_doe")
+# កុំដាក់សញ្ញា @
+TARGET_USERNAME = "target_username"
 
-client = TelegramClient('userbot_session', API_ID, API_HASH)
+async def reply_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.from_user:
+        return
 
-@client.on(events.NewMessage(chats=TARGET_USER))
-async def auto_reply(event):
-    # សារដែលអ្នកចង់ឱ្យ Bot ឆ្លើយតបទៅគាត់
-    reply_text = "សួស្តី! ខ្ញុំកំពុងរវល់ខ្លាំង មិនបានមើលសារទេ។ ប្រព័ន្ធនឹងឆ្លើយតបសារនេះដោយស្វ័យប្រវត្តិ។"
+    # ឆែកមើលថា តើអ្នកដែលផ្ញើសារមកត្រូវជា TARGET_USERNAME ដែរឬទេ?
+    sender_username = update.message.from_user.username
     
-    # ឆ្លើយតបសារស្វ័យប្រវត្តិ
-    await event.reply(reply_text)
-    print(f"[Auto-Replied] បានឆ្លើយតបទៅកាន់ {TARGET_USER} រួចរាល់។")
+    if sender_username and sender_username.lower() == TARGET_USERNAME.lower():
+        # សារដែលត្រូវ Auto Reply
+        await update.message.reply_text("សួស្តី! ខ្ញុំកំពុងរវល់ មិនបានមើលសារទេ។")
+        print(f"បាន Reply ទៅកាន់ @{sender_username} រួចរាល់។")
 
-print("Userbot កំពុងដំណើរការ...")
-client.start()
-client.run_until_disconnected()
+if __name__ == '__main__':
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    
+    # ឱ្យ Bot ចាប់យកគ្រប់សារអត្ថបទ (Text)
+    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), reply_handler))
+    
+    print("Bot កំពុង ដំណើរការ (Running)...")
+    app.run_polling()
