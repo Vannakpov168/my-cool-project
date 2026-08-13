@@ -1,34 +1,24 @@
-# 🤖 Personal Chatbot
+from telethon import TelegramClient, events
 
-![Project Banner or Screenshot](https://via.placeholder.com/800x400?text=Personal+Chatbot+Preview)
+# ១. ជំនួស API ID និង API Hash ដែលទទួលបានពី my.telegram.org
+API_ID = 1234567  # ដាក់លេខ API ID របស់អ្នកនៅទីនេះ (គ្មាន ' ')
+API_HASH = 'your_api_hash_here'  # ដាក់ API Hash របស់អ្នកនៅទីនេះ
 
-> A simple and smart personal AI chatbot designed to automate daily responses and handle queries.
+# ២. ដាក់ Username ឬ User ID របស់មនុស្សដែលផ្ញើសារមករំខានអ្នកនោះ
+# ឧទាហរណ៍៖ 'username_person' (កុំដាក់សញ្ញា @)
+TARGET_USER = 'target_username'
 
----
+client = TelegramClient('userbot_session', API_ID, API_HASH)
 
-## 📌 លក្ខណៈពិសេស (Features)
-* ⚡ **Auto-Reply:** ឆ្លើយតបសារស្វ័យប្រវត្តិ។
-* 🎯 **Target Filtering:** ឆ្លើយតបតែចំពោះ Contact ជាក់លាក់។
-* 🔒 **Secure:** រក្សាសុវត្ថិភាព API Keys និងព័ត៌មានផ្ទាល់ខ្លួន។
+@client.on(events.NewMessage(chats=TARGET_USER))
+async def auto_reply(event):
+    # សារដែលអ្នកចង់ឱ្យ Bot ឆ្លើយតបទៅគាត់
+    reply_text = "សួស្តី! ខ្ញុំកំពុងរវល់ខ្លាំង មិនបានមើលសារទេ។ ប្រព័ន្ធនឹងឆ្លើយតបសារនេះដោយស្វ័យប្រវត្តិ។"
+    
+    # ឆ្លើយតបសារស្វ័យប្រវត្តិ
+    await event.reply(reply_text)
+    print(f"[Auto-Replied] បានឆ្លើយតបទៅកាន់ {TARGET_USER} រួចរាល់។")
 
----
-
-## 🛠️ បច្ចេកវិទ្យាប្រើប្រាស់ (Tech Stack)
-* **Language:** Python / JavaScript
-* **Framework / Library:** Telethon / Node.js
-* **Tools:** Git, GitHub, VS Code
-
----
-
-## 🚀 របៀបដំឡើង និង Run (Getting Started)
-
-### ១. Prerequisites
-ប្រាកដថាកុំព្យូទ័ររបស់អ្នកមានដំឡើង៖
-* Python 3.x ឬ Node.js
-* Git
-
-### ២. Installation
-១. Clone គម្រោងនេះ៖
-```bash
-git clone [https://github.com/Vannak/personalchatbot.git](https://github.com/Vannak/personalchatbot.git)
-cd personalchatbot
+print("Userbot កំពុងដំណើរការ...")
+client.start()
+client.run_until_disconnected()
